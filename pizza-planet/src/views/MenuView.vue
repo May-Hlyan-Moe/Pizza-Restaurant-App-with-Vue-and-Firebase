@@ -1,26 +1,29 @@
 <script setup>
 import { ref } from 'vue';
 import useBasket from '@/composables/useBasket';
+import usePizzas from '@/composables/usePizzas';
+
+const {allPizzas} = usePizzas();
 const { basket, addToBasket, changeQuantity, basketTotal } = useBasket();
 
-const allPizzas = ref([
-    {
-        name: "Margherita",
-        description: "A delicious tomato based pizza topped with mozarella",
-        options: [
-                { size: 9, price: 6.95 },
-                { size: 12, price: 12.95 },
-        ], 
-    },
-    {
-        name: "Pepperoni",
-        description: "Eg. A delicious tomato based pizza topped with mozarella & pepperoni",
-        options: [
-                { size: 9, price: 7.95 },
-                { size: 12, price: 14.95 },
-        ], 
-    }
-])
+// const allPizzas = ref([
+//     {
+//         name: "Margherita",
+//         description: "A delicious tomato based pizza topped with mozarella",
+//         options: [
+//                 { size: 9, price: 6.95 },
+//                 { size: 12, price: 12.95 },
+//         ], 
+//     },
+//     {
+//         name: "Pepperoni",
+//         description: "Eg. A delicious tomato based pizza topped with mozarella & pepperoni",
+//         options: [
+//                 { size: 9, price: 7.95 },
+//                 { size: 12, price: 14.95 },
+//         ], 
+//     }
+// ])
 
 </script>
 
