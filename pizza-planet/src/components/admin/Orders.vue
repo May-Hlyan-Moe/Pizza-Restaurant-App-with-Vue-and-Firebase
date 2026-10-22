@@ -1,29 +1,51 @@
+<script setup>
+import useOrders from '@/composables/useOrders';
+import { onMounted, ref } from 'vue';
+
+const { orders, ordersMessage, getOrders, deleteOrder } = useOrders();
+const showOrders = ref(false);
+
+function orderItems(order) {
+    return Object.values(order.pizza ?? {});
+}
+
+onMounted(getOrders);
+</script>
+
 <template>
     <section class="admin_section orders_section">
         <header class="admin_section_header">
-            <h3>Current Order (5)</h3>
+            <h3>Orders ({{ orders.length }})</h3>
+            <button class="toggle_btn" @click="showOrders=!showOrders">{{ showOrders ? "hide" : "show" }}</button>
         </header>
-        <table>
+        <p v-if="ordersMessage" class="orders_message" role="alert">{{ ordersMessage }}</p>
+        <p v-else-if="orders.length === 0" class="orders_empty">No orders yet.</p>
+        <table v-else v-show="showOrders">
             <thead>
                 <tr>
                     <th scope="col">Item</th>
                     <th scope="col">Size</th>
                     <th scope="col">Quantity</th>
                     <th scope="col">Price (total)</th>
+                    <th>
+                        Delete Order
+                    </th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody v-for="(order, orderIndex) in orders" :key="order.id">
                 <tr class="order_heading">
                     <td colspan="4">
-                    <strong>Order number: 1</strong>
-                        <button type="button" class="btn_remove" aria-label="Remove order 1">&times;</button>
+                        <strong>Order number: {{ orderIndex + 1 }}</strong>
                     </td>
                 </tr>
-                <tr>
-                    <td>Margherita</td>
-                    <td>9 in</td>
-                    <td>2</td>
-                    <td>$15.90</td>
+                <tr v-for="(item, itemIndex) in orderItems(order)" :key="`${order.id}-${itemIndex}`">
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.size }} in</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ (Number(item.price) * Number(item.quantity)).toFixed(2) }}</td>
+                    <td>
+                        <button type="button" class="btn_remove" @click="deleteOrder(order.id)">&times;</button>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -85,6 +107,17 @@
     padding-bottom: 0.65rem;
     border-bottom: 0;
     color: var(--color-basil);
+}
+
+.orders_message {
+    margin: 0;
+    color: var(--color-tomato);
+    line-height: 1.5;
+}
+
+.orders_empty {
+    margin: 0;
+    color: #625f56;
 }
 
 .order_heading td {

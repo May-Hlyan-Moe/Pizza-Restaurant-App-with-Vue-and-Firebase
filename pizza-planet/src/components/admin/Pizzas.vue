@@ -1,9 +1,20 @@
+<script setup>
+import usePizzas from '@/composables/usePizzas';
+import { ref } from 'vue';
+
+const { allPizzas, deletePizza, message } = usePizzas();
+const showPizzas = ref(false);
+
+</script>
+
 <template>
     <section class="admin_section">
         <header class="admin_section_header">
             <h3>Menu</h3>
+            <button class="toggle_btn" @click="showPizzas=!showPizzas">{{ showPizzas ? "hide" : "show" }}</button>
         </header>
-        <table>
+        <p v-if="message" class="pizza_error" role="alert">{{ message }}</p>
+        <table v-show="showPizzas">
             <thead>
                 <tr>
                     <th>Pizza</th>
@@ -15,14 +26,14 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Margherita</td>
-                    <td>9 in</td>
-                    <td>$7.95</td>
-                    <td>Not set</td>
-                    <td>Not set</td>
+                <tr v-for="pizza in allPizzas" :key="pizza.id">
+                    <td>{{pizza.name}}</td>
+                    <template v-for="option in pizza.options" :key="pizza.id + option.size">
+                        <td>{{ option.size }}</td>
+                        <td>${{ Number(option.price).toFixed(2) }}</td>
+                    </template>
                     <td>
-                        <button type="button" class="btn_remove">&times;</button>
+                        <button type="button" class="btn_remove" @click="deletePizza(pizza.id)">&times;</button>
                     </td>
                 </tr>
             </tbody>
@@ -46,6 +57,14 @@
     color: var(--color-basil);
     font-size: 1.4rem;
     line-height: 1.25;
+}
+
+.pizza_error {
+    margin: 0 0 1rem;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid var(--color-tomato);
+    background: #fff2ef;
+    color: #8c2d24;
 }
 
 .admin_section table {

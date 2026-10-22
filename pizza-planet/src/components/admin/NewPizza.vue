@@ -4,6 +4,8 @@ import { ref } from 'vue';
 import { addDoc } from 'firebase/firestore';
 import { dbPizzasRef } from '@/firebase';
 
+const showNewPizza = ref(false);
+
 const newPizza = ref({
         name: "Eg. Margherita",
         description: "Eg. A delicious tomato based pizza topped with mozarella",
@@ -28,7 +30,9 @@ async function add () {
         <section class="admin_section">
                 <header class="admin_section_header">
                         <h3>Add new pizza</h3>
-                        <form action="">
+                        <button class="toggle_btn" @click="showNewPizza = !showNewPizza">{{ showNewPizza ? "hide" : "show"}}</button>
+                </header>
+                        <form action="" v-show="showNewPizza">
                                 <div class="form_group">
                                         <label for="name">Name</label>
                                         <input type="text" id="name" v-model="newPizza.name">
@@ -66,7 +70,6 @@ async function add () {
                                         <button @click.prevent="add">Add</button>
                                 </div>
                         </form>
-                </header>
         </section>
 </template>
 

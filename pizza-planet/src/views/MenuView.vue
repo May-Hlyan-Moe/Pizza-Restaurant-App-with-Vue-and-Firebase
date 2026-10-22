@@ -3,27 +3,8 @@ import { ref } from 'vue';
 import useBasket from '@/composables/useBasket';
 import usePizzas from '@/composables/usePizzas';
 
-const {allPizzas} = usePizzas();
-const { basket, addToBasket, changeQuantity, basketTotal } = useBasket();
-
-// const allPizzas = ref([
-//     {
-//         name: "Margherita",
-//         description: "A delicious tomato based pizza topped with mozarella",
-//         options: [
-//                 { size: 9, price: 6.95 },
-//                 { size: 12, price: 12.95 },
-//         ], 
-//     },
-//     {
-//         name: "Pepperoni",
-//         description: "Eg. A delicious tomato based pizza topped with mozarella & pepperoni",
-//         options: [
-//                 { size: 9, price: 7.95 },
-//                 { size: 12, price: 14.95 },
-//         ], 
-//     }
-// ])
+const { allPizzas, message } = usePizzas();
+const { basket, addToBasket, changeQuantity, basketTotal, addNewOrder, basketText } = useBasket();
 
 </script>
 
@@ -31,17 +12,18 @@ const { basket, addToBasket, changeQuantity, basketTotal } = useBasket();
     <div class="menu_wrapper">
         <div class="menu">
             <h3>~ Authentic Handmade Pizza ~</h3>
+            <p v-if="message" class="pizza_error" role="alert">{{ message }}</p>
             <table class="menu_table">
-                <tbody v-for="pizza in allPizzas" :key="pizza.name">
+                <tbody v-for="pizza in allPizzas" :key="pizza.id">
                     <tr class="pizza_heading">
                         <th colspan="3">{{ pizza.name }}</th>
                     </tr>
                     <tr class="pizza_description">
                         <td colspan="3">{{ pizza.description }}</td>
                     </tr>
-                    <tr v-for="option in pizza.options" :key="option.size" class="pizza_option">
+                    <tr v-for="option in pizza.options" :key="pizza.id + option.size" class="pizza_option">
                         <td>{{ option.size }}&quot;</td>
-                        <td>${{ option.price.toFixed(2) }}</td>
+                        <td>${{ Number(option.price).toFixed(2) }}</td>
                         <td>
                             <button
                                 type="button"
@@ -58,21 +40,26 @@ const { basket, addToBasket, changeQuantity, basketTotal } = useBasket();
         </div>
         <div class="basket">
             <h3>~ Basket ~</h3>
-            <table>
-                <tbody v-for="(item, index) in basket" :key="index">
-                    <tr>
-                        <td>
-                            <button type="button" class="quantity_btn" :aria-label="`Remove one ${item.name}`" @click="changeQuantity(index, -1)">&#8722;</button>
-                            <span>{{ item.quantity }}</span>
-                            <button type="button" class="quantity_btn" :aria-label="`Add one ${item.name}`" @click="changeQuantity(index, 1)">&#43;</button>
-                        </td>
-                        <td>{{ item.name }} {{ item.size }}&quot;</td>
-                        <td>${{ (item.price * item.quantity).toFixed(2) }}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p>Order Total: ${{ basketTotal.toFixed(2) }}</p>
-            <button>Place Order</button>
+            <div v-if="basket.length > 0">
+                <table>
+                    <tbody v-for="(item, index) in basket" :key="index">
+                        <tr>
+                            <td>
+                                <button type="button" class="quantity_btn" :aria-label="`Remove one ${item.name}`" @click="changeQuantity(index, -1)">&#8722;</button>
+                                <span>{{ item.quantity }}</span>
+                                <button type="button" class="quantity_btn" :aria-label="`Add one ${item.name}`" @click="changeQuantity(index, 1)">&#43;</button>
+                            </td>
+                            <td>{{ item.name }} {{ item.size }}&quot;</td>
+                            <td>${{ (item.price * item.quantity).toFixed(2) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>Order Total: ${{ basketTotal.toFixed(2) }}</p>
+                <button @click="addNewOrder()">Place Order</button>
+            </div>
+            <div v-else>
+                <p>{{ basketText }}</p>
+            </div>
         </div>
     </div>
 </template>
@@ -108,6 +95,14 @@ const { basket, addToBasket, changeQuantity, basketTotal } = useBasket();
     margin: 0 0 1.25rem;
     color: var(--color-basil);
     font-size: 1.35rem;
+}
+
+.pizza_error {
+    margin: 0 0 1rem;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid var(--color-tomato);
+    background: #fff2ef;
+    color: #8c2d24;
 }
 
 .menu_table,
