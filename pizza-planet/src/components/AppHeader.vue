@@ -1,3 +1,9 @@
+<script setup>
+import SignIn from './SignIn.vue';
+import useAuth from '@/composables/useAuth';
+
+const { signInModelOpen, userData, logOut } = useAuth();
+</script>
 <template>
     <header class="site-header">
         <div class="header-content">
@@ -10,12 +16,15 @@
                 <RouterLink :to="{ name: 'aboutLink' }" class="nav-link">About</RouterLink>
                 <RouterLink :to="{ name: 'menuLink' }" class="nav-link">Menu</RouterLink>
                 <RouterLink :to="{ name: 'adminLink' }" class="nav-link">Admin</RouterLink>
+                <button type="button" class="nav-link signin-trigger" @click="signInModelOpen = true" v-if="!userData">Sign In</button>
+                <button type="button" class="nav-link signin-trigger" @click="logOut" v-if="userData">Log Out</button>
             </nav>
         </div>
         <div class="hero-tagline">
             <h2>The #1 Place For Pizza</h2>
         </div>
     </header>
+    <SignIn />
 </template>
 
 <style scoped>
@@ -76,6 +85,13 @@
     font-weight: 600;
     font-size: 0.95rem;
     transition: color 160ms ease;
+    cursor: pointer;
+}
+
+.signin-trigger {
+    border: 0;
+    background: transparent;
+    font-family: inherit;
 }
 
 .nav-link:hover,
